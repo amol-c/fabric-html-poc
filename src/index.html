@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+</head>
+<body>
+
+    <div id="table-questionaire" style="position: absolute;  backface-visibility: hidden; transform: translateZ(0);
+    -webkit-font-smoothing: subpixel-antialiased; z-index: 1; pointer-events: none; transform-origin: center;">
+    <div id="table-questionaire-origin" style="left: 0; top: 0; position: absolute;height: 0px;width:0px;"></div>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="pointer-events: auto"><div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <input type="radio" aria-label="Radio button for following text input">
+                  </div>
+                </div>
+                <!-- <input type="text" class="form-control" aria-label="Text input with radio button"> -->
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">With textarea</span>
+                    </div>
+                    <textarea class="form-control" aria-label="With textarea"></textarea>
+                  </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+              <td><div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <input type="radio" aria-label="Radio button for following text input">
+                    </div>
+                  </div>
+                  <input type="text" class="form-control" aria-label="Text input with radio button">
+                </div>
+              </td>          </tr>
+        </tbody>
+      </table>
+    </div>      
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+
+    <script src="../node_modules/fabricjs/index.js"></script>
+
+    <script>
+    (function() {
+
+      fabric.Object.prototype.transparentCorners = false;
+      fabric.Object.prototype.originX = fabric.Object.prototype.originY = 'center';
+
+      fabric.Canvas.prototype.getAbsoluteCoords = function(object) {
+        return {
+          left: object.left + this._offset.left,
+          top: object.top + this._offset.top
+        };
+      }
+
+  var canvas = this.__canvas = new fabric.Canvas('canvas');
+  fabric.Object.prototype.transparentCorners = false;
+  fabric.Object.prototype.originX = fabric.Object.prototype.originY = 'center';
+
+  fabric.Canvas.prototype.getAbsoluteCoords = function(object) {
+    return {
+      left: object.left + this._offset.left,
+      top: object.top + this._offset.top
+    };
+  }
+
+  var btn = document.getElementById('table-questionaire')
+
+  function positionBtn(obj, isScaling) {
+    const style = btn.style
+    var computedStyle = window.getComputedStyle(btn);
+    var matrix = new WebKitCSSMatrix(computedStyle.webkitTransform);
+
+    var currentTransformMatrix = obj.calcTransformMatrix();
+
+    const a = currentTransformMatrix[0]
+    const b = currentTransformMatrix[1]
+    const c = currentTransformMatrix[2]
+    const d = currentTransformMatrix[3]
+    const tx = currentTransformMatrix[4]
+    const ty = currentTransformMatrix[5]
+
+		var n = 10000; // precision
+    
+    // if(isScaling !== true) {
+    //   var absCoords = canvas.getAbsoluteCoords(obj);
+
+    //   // style.top = `${absCoords.top}px`
+    //   // style.left = `${absCoords.left}px`
+    //  $("#table-questionaire").offset({top: absCoords.top - obj.height/2, left: absCoords.left - obj.width/2})
+
+    // } else {
+      var str = "matrix(" + (a*n|0)/n +","+ (b*n|0)/n +","+ (c*n|0)/n +","+ (d*n|0)/n +","+ (tx|0);
+      style.transform = style.WebkitTransform = style.OTransform = style.msTransform = str +","+ (ty|0) +")";
+      style.MozTransform = str +"px,"+ (ty|0) +"px)";
+
+    // }
+  }
+
+  var square = new fabric.Rect({ 
+    width: 500, 
+    height: 400, 
+    fill: '#fff',
+  });
+
+  canvas.add(square);
+
+  square.on('moving', function() { positionBtn(square, false) });
+  square.on('scaling', function() { positionBtn(square, true) });
+  // var absCoords = canvas.getAbsoluteCoords(square);
+
+  var computedStyle = window.getComputedStyle(btn);
+
+  const btnWidth = parseInt(computedStyle.width, 10)
+  const btnHeight = parseInt(computedStyle.height, 10)
+
+  // btn.style.left = (absCoords.left) + 'px';
+  // btn.style.top = (absCoords.top ) + 'px';
+
+  // positionBtn(square, false);
+  var absCoords = canvas.getAbsoluteCoords(square);
+  $("#table-questionaire").offset({top: absCoords.top - btnHeight/2, left: absCoords.left - btnWidth/2})
+
+  canvas.renderAll()
+
+
+  // square.left = 400
+
+
+  const addAutoSizing = () => {
+        var textarea = document.querySelector('textarea');
+
+        textarea.addEventListener('keydown', autosize);
+                    
+        function autosize(){
+          var el = this;
+          setTimeout(function(){
+            el.style.cssText = 'height:auto; padding:0';
+            // for box-sizing other than "content-box" use:
+            el.style.cssText = '-moz-box-sizing:content-box';
+            el.style.cssText = 'height:' + el.scrollHeight + 'px';
+            updateHeight()
+          },0);
+        }
+      }
+
+
+  const updateHeight = () => {
+    // const newHeight = $("#table-questionaire").get(0).getBoundingClientRect().height + 20
+    // const cssWidth = $("#table-questionaire").get(0).getBoundingClientRect().width + 20
+
+    const newHeight = $("#table-questionaire").height() + 20
+    const cssWidth = $("#table-questionaire").width() + 20
+
+    const lastHeight = newHeight
+      const squareHeight = lastHeight
+
+      const origin = $("#table-questionaire-origin").offset()
+      square.setHeight(squareHeight)
+      square.setWidth(cssWidth)
+
+      square.setCoords()
+      var absCoords = canvas.getAbsoluteCoords(square);
+
+      const realCSSHeight = $("#table-questionaire").get(0).getBoundingClientRect().height + 20
+      const realCSSWidth = $("#table-questionaire").get(0).getBoundingClientRect().width + 20
+      $("#table-questionaire").offset({top: absCoords.top - (realCSSHeight-20)/2, left: absCoords.left - (realCSSWidth-20)/2})
+
+      canvas.renderAll()
+  }
+
+  addAutoSizing()
+})()
+    </script>
+</body>
+</html>
