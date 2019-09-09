@@ -80,7 +80,7 @@
 
   var btn = document.getElementById('table-questionaire')
 
-  function positionBtn(obj, isScaling) {
+  function positionBtn(obj) {
     const style = btn.style
     var computedStyle = window.getComputedStyle(btn);
     var matrix = new WebKitCSSMatrix(computedStyle.webkitTransform);
@@ -95,20 +95,10 @@
     const ty = currentTransformMatrix[5]
 
 		var n = 10000; // precision
-    
-    // if(isScaling !== true) {
-    //   var absCoords = canvas.getAbsoluteCoords(obj);
 
-    //   // style.top = `${absCoords.top}px`
-    //   // style.left = `${absCoords.left}px`
-    //  $("#table-questionaire").offset({top: absCoords.top - obj.height/2, left: absCoords.left - obj.width/2})
-
-    // } else {
       var str = "matrix(" + (a*n|0)/n +","+ (b*n|0)/n +","+ (c*n|0)/n +","+ (d*n|0)/n +","+ (tx|0);
       style.transform = style.WebkitTransform = style.OTransform = style.msTransform = str +","+ (ty|0) +")";
       style.MozTransform = str +"px,"+ (ty|0) +"px)";
-
-    // }
   }
 
   var square = new fabric.Rect({ 
@@ -119,27 +109,17 @@
 
   canvas.add(square);
 
-  square.on('moving', function() { positionBtn(square, false) });
-  square.on('scaling', function() { positionBtn(square, true) });
-  // var absCoords = canvas.getAbsoluteCoords(square);
+  square.on('moving', function() { positionBtn(square) });
+  square.on('scaling', function() { positionBtn(square) });
 
   var computedStyle = window.getComputedStyle(btn);
 
   const btnWidth = parseInt(computedStyle.width, 10)
   const btnHeight = parseInt(computedStyle.height, 10)
-
-  // btn.style.left = (absCoords.left) + 'px';
-  // btn.style.top = (absCoords.top ) + 'px';
-
-  // positionBtn(square, false);
   var absCoords = canvas.getAbsoluteCoords(square);
   $("#table-questionaire").offset({top: absCoords.top - btnHeight/2, left: absCoords.left - btnWidth/2})
 
   canvas.renderAll()
-
-
-  // square.left = 400
-
 
   const addAutoSizing = () => {
         var textarea = document.querySelector('textarea');
@@ -160,8 +140,6 @@
 
 
   const updateHeight = () => {
-    // const newHeight = $("#table-questionaire").get(0).getBoundingClientRect().height + 20
-    // const cssWidth = $("#table-questionaire").get(0).getBoundingClientRect().width + 20
 
     const newHeight = $("#table-questionaire").height() + 20
     const cssWidth = $("#table-questionaire").width() + 20
